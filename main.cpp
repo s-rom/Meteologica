@@ -28,17 +28,24 @@ struct MeteoData
 
 MeteoData * MeteoData_Make(int initial_rows)
 {
-    MeteoData* data = (MeteoData*) malloc(sizeof(MeteoData) * initial_rows);
+    MeteoData* data = (MeteoData*) malloc(sizeof(MeteoData));
+    data->records = (MeteoRecord*) malloc(sizeof(MeteoRecord) * initial_rows);
     data->rows = initial_rows;
+    data->next_idx = 0;
     return data;
+}
+
+void MeteoData_Free(MeteoData * data)
+{
+    free(data->records);
+    free(data);
 }
 
 MeteoData * MeteoData_AllocExtraRows(MeteoData * data, int extra_rows)
 {
     int rows = data->rows;
-    data = (MeteoData*) malloc(sizeof(MeteoData));
     data->rows = rows + extra_rows;
-    data->records = (MeteoRecord*) malloc(sizeof(MeteoRecord) * data->rows);
+    data->records = (MeteoRecord*) realloc(data->records, sizeof(MeteoRecord) * data->rows);
     return data;
 }
 
@@ -49,13 +56,12 @@ void MeteoData_InsertRecord(MeteoData* data, MeteoRecord record)
     {
         MeteoData_AllocExtraRows(data, 10);
     }
-    else
-    {
-        data->records[data->next_idx++] = record;
-    }
+
+     data->records[data->next_idx++] = record;
+
 }
 
-enum TemperatureUnits
+enum Units
 {
     CELSIUS, FAHRENHEIT
 };
@@ -204,13 +210,80 @@ void parse_csv_file(HashTable* cities, FILE* f)
     }
 }
 
-int get_closest_record(MeteoData data, Date date, const char * city, TemperatureUnits units)
+int get_closest_record(MeteoData data, Date date, const char * city, Units units)
 {
     for (int i = 0; i < data.rows - 1; i++)
     {
         MeteoRecord * row = &data.records[i];
 //        if (strcmp(city, row->city) != 0)
 //            continue;
+
+    }
+}
+
+
+int compare_number(int a, int b)
+{
+    if (a > b) return 1;
+    else if (a < b) return -1;
+    else return 0;
+}
+
+int Date_Compare(Date* a, Date* b)
+{
+    int year = compare_number(a->year, b->year);
+    if (year != 0) return year;
+
+    int month = compare_number(a->month, b->month);
+    if (month != 0) return month;
+
+    compare_number(a->day, b->day);
+}
+
+
+int retrieve_row_index_by_date(MeteoData* city, Date date)
+{
+    Date* mid_date;
+    int start = 0, end = city->next_idx - 1;
+    int mid = (start + end) / 2;
+
+
+    while (start <= end)
+    {
+        mid_date = &city->records[mid].date;
+        int compare = Date_Compare(mid_date, &date);
+
+        if (compare < 0)
+            start = mid + 1;
+        else if (compare > 0)
+            end = mid - 1;
+        else
+            break;
+
+        mid = (start + end) / 2;
+    }
+
+
+    if (start > end)
+        return -1;
+    else
+        return mid;
+}
+
+
+char * get_next_days_prevision(HashTable* cities, char * city, Date date, Units units, int days_forward)
+{
+    HashNode* node = HashTable_GetNode(cities, city);
+    MeteoData* data = (MeteoData*) node->data;
+    int idx = retrieve_row_index_by_date(data, date);
+    if (idx == -1)
+    {
+        // TODO
+        return NULL;
+    }
+
+    for (int i = idx; i < idx+days_forward; i++)
+    {
 
     }
 }
@@ -230,7 +303,25 @@ void test_hash_table()
 
     parse_csv_file(cities, f);
 
+    HashNode* madrid_node = HashTable_GetNode(cities, "Madrid");
+    MeteoData* madrid_data = (MeteoData* ) madrid_node->data;
+    printf("--- Madrid ---\n");
+    for (int i = 0; i < madrid_data->next_idx; i++)
+    {
+        MeteoRecord * row = &madrid_data->records[i];
+        printf("%d/%d/%d temperatura: [%.2f, %.2f], precipitacion: %.2f, nubosidad: %d\n",
+               row->date.day, row->date.month, row->date.year,
+               row->min_temp, row->max_temp, row->precipitation,
+               row->cloudiness);
+    }
 
+
+    Date date;
+    date.day = 10;
+    date.month = 10;
+    date.year = 2020;
+    int idx = retrieve_row_index_by_date(madrid_data, date);
+    printf("idx: %d\n",idx);
 
 }
 
@@ -251,22 +342,22 @@ int main(int argc, char *argv[])
     int lines = count_rows(f);
     rewind(f);
 
-    MeteoData data = parse_csv_file(f, lines);
+//    MeteoData data = parse_csv_file(cities, f);
 
 
-    for (int i = 0; i < data.rows - 1; i++)
-    {
-        MeteoRecord * row = &data.records[i];
+//    for (int i = 0; i < data.rows - 1; i++)
+//    {
+//        MeteoRecord * row = &data.records[i];
 //        printf("%d/%d/%d %s -> [%.2f, %.2f], %.2f, %d\n",
 //               row->date.day, row->date.month, row->date.year,
 //               row->city,
 //               row->min_temp, row->max_temp,
 //               row->precipitation, row->cloudiness);
 
-    }
+//    }
 
 
 
-    free(data.records);
-    return 0;
+//    free(data.records);
+//    return 0;
 }
