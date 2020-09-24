@@ -6,6 +6,7 @@
 #include "MeteoData.h"
 #include "Util.h"
 #include "CSVParser.h"
+#include "JSON.h"
 
 
 
@@ -120,7 +121,29 @@ void test_hash_table()
 
 int main(int argc, char *argv[])
 {
-    test_hash_table();
+//    test_hash_table();
+
+    size_t BUFF_SIZE = 1024; // initial size
+    char * json_buff = (char*) malloc(BUFF_SIZE);
+    JSON_Start(json_buff, &BUFF_SIZE, "Madrid");
+
+    MeteoRecord record;
+    record.date.day = 10;
+    record.date.month = 9;
+    record.date.year = 2020;
+
+    record.max_temp = 30;
+    record.min_temp = 22;
+    record.cloudiness = 70;
+    record.precipitation = 0;
+
+    JSON_AddRecord(json_buff, &BUFF_SIZE, &record, 1);
+    JSON_AddRecord(json_buff, &BUFF_SIZE, &record, 1);
+    JSON_AddRecord(json_buff, &BUFF_SIZE, &record, 1);
+    JSON_AddRecord(json_buff, &BUFF_SIZE, &record, 1);
+
+
+    printf("SIZE: %d\n%s\n", BUFF_SIZE, json_buff);
 
     return 0;
 }
