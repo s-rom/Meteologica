@@ -7,4 +7,8 @@ SOURCES += \
         main.cpp
 
 HEADERS += \
-    hashtable.h
+    CSVParser.h \
+    HashTable.h \
+    JSON.h \
+    MeteoData.h \
+    Util.h
