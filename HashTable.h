@@ -1,3 +1,29 @@
+/*
+
+=== HashTable library ===
+@author Sergi
+
+    -> Implements a HashTable with string keys and any value.
+       Uses open hashing (linked list) for collisions.
+
+    -> Example of use:
+
+        MyStruct * m1;
+        MyStruct * m2;
+        ...
+
+        HashTable* table = HashTable_Make(10);
+        HashTable_InsertNode(table, "City1", m1);
+        HashTable_InsertNode(table, "City2", m2);
+        ...
+
+        HashTable_GetNode(table, "City2"); // returns the HashNode corresponding to key "City2"
+
+        ...
+
+        HashTable_Free(table);
+*/
+
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 

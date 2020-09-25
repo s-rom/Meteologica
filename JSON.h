@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "Util.h"
 
 void JSON_Concat(char * buff, size_t* BUFF_SIZE, const char * src)
 {
@@ -19,17 +20,32 @@ void JSON_Concat(char * buff, size_t* BUFF_SIZE, const char * src)
     strcat(buff, src);
 }
 
-void JSON_AddRecord(char * buff, size_t* BUFF_SIZE, MeteoRecord* row, int last_comma)
+void JSON_AddRecord(char * buff, size_t* BUFF_SIZE, MeteoRecord* row, Units temp_units, int last_comma)
 {
 
     /*
      ,{...}
 
      */
+    const char * COMMA = ",";
+    const char * UNITS_STR = temp_units == CELSIUS ? "Celsius" : "Fahrenheit";
 
-    char* aux = (char *)malloc(1024);
-    sprintf(aux, "{ \"MinTemp\": %.2f, \"MaxTemp\": %.2f, \"TempUnits\":\"%s\", \"Precipitation\": %.2f, \"Cloudiness\": %d}",
-             row->min_temp, row->max_temp, "celsius", row->precipitation, row->cloudiness);
+    char* aux = (char *)malloc(2048);
+
+
+    float minT = row->min_temp;
+    float maxT = row->max_temp;
+    if (temp_units == FAHRENHEIT)
+    {
+        celsius_to_fahrenheit(&minT);
+        celsius_to_fahrenheit(&maxT);
+    }
+
+    sprintf(aux, "{\"Date\":\"%d-%d-%d\", \"MinTemp\": %.2f, \"MaxTemp\": %.2f, \"TempUnits\":\"%s\", \"Precipitation\": %.2f, \"Cloudiness\": %d}%s",
+            row->date.year, row->date.month, row->date.day,
+            minT, maxT, UNITS_STR,
+            row->precipitation, row->cloudiness,
+            last_comma ? COMMA : " ");
 
     JSON_Concat(buff, BUFF_SIZE, aux);
 
@@ -50,14 +66,15 @@ void JSON_Start(char * buff, size_t* BUFF_SIZE, const char * city)
     free(aux);
 }
 
-void JSON_End(char * buff)
+void JSON_End(char * buff, size_t* BUFF_SIZE)
 {
-
     /*
 
       ]}
 
      */
+    JSON_Concat(buff, BUFF_SIZE, "]}");
+
 }
 
 

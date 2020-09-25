@@ -2,26 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+
 #include "HashTable.h"
 #include "MeteoData.h"
 #include "Util.h"
 #include "CSVParser.h"
 #include "JSON.h"
-
-
-
-int get_closest_record(MeteoData data, Date date, const char * city, Units units)
-{
-    for (int i = 0; i < data.rows - 1; i++)
-    {
-        MeteoRecord * row = &data.records[i];
-//        if (strcmp(city, row->city) != 0)
-//            continue;
-
-    }
-
-    return 0;
-}
 
 
 int retrieve_row_index_by_date(MeteoData* city, Date date)
@@ -72,29 +58,21 @@ char * get_next_days_prevision(HashTable* cities, const char * city, Date date, 
         return NULL;
     }
 
+    size_t BUFF_SIZE = 2048; // initial size
+    char * json_buff = (char*) malloc(BUFF_SIZE);
+    JSON_Start(json_buff, &BUFF_SIZE, city);
 
 
-    printf("-> Buscando previsión para %s, %d/%d: Próximos %d dias...\n",
-           city, date.day, date.month, days_forward);
-    for (int i = idx; i <= idx + days_forward && i < data->next_idx; i++)
+    const int MAX_ROWS = idx + days_forward;
+    for (int i = idx; i <= MAX_ROWS && i < data->next_idx; i++)
     {
         MeteoRecord* row = &data->records[i];
-
-        float minT = row->min_temp;
-        float maxT = row->max_temp;
-        if (units == FAHRENHEIT)
-        {
-            minT = celsius_to_fahrenheit(minT);
-            maxT = celsius_to_fahrenheit(maxT);
-        }
-
-        printf("\t[%d/%d] Temperatura: [%.2f hasta %.2f]%s, precipitaciones: %.2fmm, nubosidad: %d\n",
-               row->date.day, row->date.month,
-               row->min_temp, row->max_temp,
-               units == FAHRENHEIT ? "F" : "C",
-               row->precipitation,
-               row->cloudiness);
+        JSON_AddRecord(json_buff, &BUFF_SIZE, row, units,
+                       (i+1 <= MAX_ROWS && i+1 < data->next_idx));
     }
+
+    JSON_End(json_buff, &BUFF_SIZE);
+    return json_buff;
 }
 
 
@@ -116,34 +94,13 @@ void test_hash_table()
     date.day = 24;
     date.month = 9;
     date.year = 2020;
-    get_next_days_prevision(cities, "Madrid", date, CELSIUS, 3);
+    char * json = get_next_days_prevision(cities, "Valencia", date, FAHRENHEIT, 10);
+    printf("%s\n",json);
+    free(json);
 }
 
 int main(int argc, char *argv[])
 {
-//    test_hash_table();
-
-    size_t BUFF_SIZE = 1024; // initial size
-    char * json_buff = (char*) malloc(BUFF_SIZE);
-    JSON_Start(json_buff, &BUFF_SIZE, "Madrid");
-
-    MeteoRecord record;
-    record.date.day = 10;
-    record.date.month = 9;
-    record.date.year = 2020;
-
-    record.max_temp = 30;
-    record.min_temp = 22;
-    record.cloudiness = 70;
-    record.precipitation = 0;
-
-    JSON_AddRecord(json_buff, &BUFF_SIZE, &record, 1);
-    JSON_AddRecord(json_buff, &BUFF_SIZE, &record, 1);
-    JSON_AddRecord(json_buff, &BUFF_SIZE, &record, 1);
-    JSON_AddRecord(json_buff, &BUFF_SIZE, &record, 1);
-
-
-    printf("SIZE: %d\n%s\n", BUFF_SIZE, json_buff);
-
+    test_hash_table();
     return 0;
 }
