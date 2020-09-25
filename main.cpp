@@ -10,6 +10,14 @@
 #include "JSON.h"
 
 
+/**
+ * Retrieves a row from a MeteoData (associated with a city) and a date.
+ * This functions assumes that the MeteoData records are sorted by date ascending.
+ * Implements binary search (O(log n)).
+ * @param city
+ * @param date
+ * @return index to the row
+ */
 int retrieve_row_index_by_date(MeteoData* city, Date date)
 {
     Date* mid_date;
@@ -39,7 +47,15 @@ int retrieve_row_index_by_date(MeteoData* city, Date date)
         return mid;
 }
 
-
+/**
+ * Returns a json formatted string that contains days_forward + 1 records starting from date parameter.
+ * @param cities
+ * @param city
+ * @param date
+ * @param units
+ * @param days_forward how many days it will look for
+ * @return json buffer, must be freed by caller
+ */
 char * get_next_days_prevision(HashTable* cities, const char * city, Date date, Units units, int days_forward)
 {
     HashNode* node = HashTable_GetNode(cities, city);
@@ -76,7 +92,9 @@ char * get_next_days_prevision(HashTable* cities, const char * city, Date date, 
 }
 
 
-void test_hash_table()
+
+
+int main(int argc, char *argv[])
 {
     HashTable* cities = HashTable_Make(5);
 
@@ -96,11 +114,7 @@ void test_hash_table()
     date.year = 2020;
     char * json = get_next_days_prevision(cities, "Valencia", date, FAHRENHEIT, 10);
     printf("%s\n",json);
-    free(json);
-}
 
-int main(int argc, char *argv[])
-{
-    test_hash_table();
+    free(json);
     return 0;
 }
