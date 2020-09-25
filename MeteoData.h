@@ -1,3 +1,10 @@
+/*
+=== MeteoData library ===
+@author Sergi
+
+    -> Implements a data structure to store and fast retrieve meteo data
+*/
+
 #ifndef METEODATA_H
 #define METEODATA_H
 
@@ -33,7 +40,11 @@ struct MeteoData
 };
 
 
-
+/**
+ * Creates a MeteoData struct with an initial capacity.
+ * @param initial_rows
+ * @return the pointer to the created struct.
+ */
 MeteoData * MeteoData_Make(int initial_rows)
 {
     MeteoData* data = (MeteoData*) malloc(sizeof(MeteoData));
@@ -43,12 +54,22 @@ MeteoData * MeteoData_Make(int initial_rows)
     return data;
 }
 
+/**
+ * Releases memory associated to a MeteoData pointer.
+ * @param data
+ */
 void MeteoData_Free(MeteoData * data)
 {
     free(data->records);
     free(data);
 }
 
+/**
+ * Allocates extra memory for the MeteoData struct.
+ * @param data pointer to initialized MeteoData
+ * @param extra_rows
+ * @return pointer to the data parameter
+ */
 MeteoData * MeteoData_AllocExtraRows(MeteoData * data, int extra_rows)
 {
     int rows = data->rows;
@@ -58,6 +79,11 @@ MeteoData * MeteoData_AllocExtraRows(MeteoData * data, int extra_rows)
 }
 
 
+/**
+ * Inserts back a new record to a MeteoData struct.
+ * @param data pointer to initialized MeteoData
+ * @param record
+ */
 void MeteoData_InsertRecord(MeteoData* data, MeteoRecord record)
 {
     if (data->next_idx >= data->rows)

@@ -44,6 +44,11 @@ struct HashTable
     HashNode ** nodes;
 };
 
+/**
+ * Allocates memory for a new HashTable.
+ * @param size
+ * @return pointer to the created HashTable
+ */
 HashTable * HashTable_Make(int size)
 {
     HashTable* table = (HashTable*) malloc(sizeof(HashTable));
@@ -55,6 +60,13 @@ HashTable * HashTable_Make(int size)
     return table;
 }
 
+/**
+ * Releases recursively the memory associated with a HashNode.
+ * I will release the entire linked list. If free_data equals 1,
+ * it will also free the pointed data associated to the node.
+ * @param node
+ * @param free_data
+ */
 void HashNode_Free(HashNode* node, int free_data)
 {
     if (node == NULL) return;
@@ -69,6 +81,12 @@ void HashNode_Free(HashNode* node, int free_data)
 
 }
 
+/**
+ * Frees all the memory of the HashTable. If free_data equals 1,
+ * it will also fre the pointed data associated to all the nodes.
+ * @param table
+ * @param free_data
+ */
 void HashTable_Free(HashTable* table, int free_data)
 {
     for (int n = 0; n < table->nodes_size; n++)
@@ -92,6 +110,13 @@ unsigned long hash(const char * str)
     return hash;
 }
 
+/**
+ * Retrievs a HashNode from the table corresponding to a given key.
+ * @param table
+ * @param key
+ * @return A pointer to the HashNode or NULL if a node with that
+ * key was not found.
+ */
 HashNode* HashTable_GetNode(HashTable * table, const char * key)
 {
     int idx = hash(key) % table->nodes_size;
@@ -107,6 +132,10 @@ HashNode* HashTable_GetNode(HashTable * table, const char * key)
 }
 
 
+/**
+ * Prints the contents of a hashtable for debug purposes.
+ * @param table
+ */
 void HashTable_Print(HashTable* table)
 {
     for (int i = 0; i < table->nodes_size; i++)
@@ -127,6 +156,13 @@ void HashTable_Print(HashTable* table)
     }
 }
 
+/**
+ * Inserts a new node into the table.
+ * @param table
+ * @param key
+ * @param data pointer to a valid memory address.
+ * @return the newly created HashNode pointer or NULL if it failed.
+ */
 HashNode* HashTable_InsertNode(HashTable* table, const char * key, void * data)
 {
 

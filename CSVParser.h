@@ -7,7 +7,14 @@
 #include <stdio.h>
 
 
-
+/**
+ * Parses the next token from the csv file.
+ * @param f must be opened.
+ * @param token
+ * @param token_size
+ * @param separator
+ * @return
+ */
 int get_next_token(FILE * f, char * token, size_t token_size, char separator)
 {
     const size_t BUFFER_SIZE = 256;
@@ -29,7 +36,14 @@ int get_next_token(FILE * f, char * token, size_t token_size, char separator)
     return c != EOF;
 }
 
-
+/**
+ * Parses a csv file and stores the content on a HashTable indexed by city.
+ * File format must be:
+ *  HEADER
+ *  YYYY/MM/DD;City;MaxTemp;MinTemp;Precipitation;Cloudiness
+ * @param cities
+ * @param f must be opened
+ */
 void parse_csv_file(HashTable* cities, FILE* f)
 {
     // Skip first
