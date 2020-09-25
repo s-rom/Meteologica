@@ -12,7 +12,7 @@
 
 /**
  * Retrieves a row from a MeteoData (associated with a city) and a date.
- * This functions assumes that the MeteoData records are sorted by date ascending.
+ * This functions assumes that the MeteoData records are sorted ascending by date.
  * Implements binary search (O(log n)).
  * @param city
  * @param date
