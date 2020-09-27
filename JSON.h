@@ -68,8 +68,6 @@ void JSON_AddRecord(char * buff, size_t* BUFF_SIZE, MeteoRecord* row, Units temp
 {
 
     const char * COMMA = ",";
-    const char * UNITS_STR = temp_units == CELSIUS ? "Celsius" : "Fahrenheit";
-
     char* aux = (char *)malloc(2048);
 
 
@@ -81,9 +79,9 @@ void JSON_AddRecord(char * buff, size_t* BUFF_SIZE, MeteoRecord* row, Units temp
         celsius_to_fahrenheit(&maxT);
     }
 
-    sprintf(aux, "{\"Date\":\"%d-%d-%d\", \"MinTemp\": %.2f, \"MaxTemp\": %.2f, \"TempUnits\":\"%s\", \"Precipitation\": %.2f, \"Cloudiness\": %d}%s",
+    sprintf(aux, "{\"Date\":\"%d-%d-%d\", \"MinTemp\": %.2f, \"MaxTemp\": %.2f, \"Precipitation\": %.2f, \"Cloudiness\": %d}%s",
             row->date.year, row->date.month, row->date.day,
-            minT, maxT, UNITS_STR,
+            minT, maxT,
             row->precipitation, row->cloudiness,
             last_comma ? COMMA : " ");
 
@@ -98,15 +96,17 @@ void JSON_AddRecord(char * buff, size_t* BUFF_SIZE, MeteoRecord* row, Units temp
  * @param BUFF_SIZE current size of buff
  * @param city
  */
-void JSON_Start(char * buff, size_t* BUFF_SIZE, const char * city)
+void JSON_Start(char * buff, size_t* BUFF_SIZE, const char * city, Units units)
 {
     /*
      {
         "City": city,
         "Records": [
     */
+    const char *units_str = units == FAHRENHEIT ? "Fahrenheit" : "Celsius";
     char* aux = (char *)malloc(256);
-    snprintf(aux, 256, "{ \"City\":\"%s\", \"Records\":[", city);
+    snprintf(aux, 256, "{ \"City\":\"%s\", \"TemperatureUnits\":\"%s\", \"Records\":[",
+             city, units_str);
     strcpy(buff, aux);
     free(aux);
 }

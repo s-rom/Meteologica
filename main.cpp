@@ -76,7 +76,7 @@ char * get_next_days_prevision(HashTable* cities, const char * city, Date date, 
 
     size_t BUFF_SIZE = 2048; // initial size
     char * json_buff = (char*) malloc(BUFF_SIZE);
-    JSON_Start(json_buff, &BUFF_SIZE, city);
+    JSON_Start(json_buff, &BUFF_SIZE, city, units);
 
 
     const int MAX_ROWS = idx + days_forward;
@@ -92,29 +92,96 @@ char * get_next_days_prevision(HashTable* cities, const char * city, Date date, 
 }
 
 
+/**
+ * Given a html template containing &JSON&, generates a second file
+ * replacing the token with the obtained json data.
+ * @param templatePath html file containing the string &JSON&
+ * @param outPath html file with JSON data
+ * @param json_buff json raw data
+ */
+void generate_html(const char * templatePath, const char * outPath, char * json_buff)
+{
+    FILE * template_f = fopen(templatePath, "r");
+    FILE * out_f = fopen(outPath, "w");
+
+
+    char buffer[4096];
+    fscanf(template_f, "%[^&]", buffer);
+    fprintf(out_f, "%s",buffer);
+
+    // &JSON&
+    fgetc(template_f);
+    fscanf(template_f, "%[^&]", buffer);
+    fgetc(template_f);
+    fscanf(template_f, "%[^&]", buffer);
+
+    fprintf(out_f, "%s", json_buff);
+    fprintf(out_f, "%s", buffer);
+    fclose(template_f);
+    fclose(out_f);
+}
+
 
 
 int main(int argc, char *argv[])
 {
+    if (argc < 4)
+    {
+        fprintf(stderr, "Format: .exe City YYYY/MM/DD [F|C] CSV_FilePath\n");
+        return 0;
+    }
+
+    /* Requested city */
+    char * city = argv[1];
+
+    /* Requested date */
+    char * date_str = argv[2];
+    Date date;
+    parse_date(date_str, &date.day, &date.month, &date.year);
+
+    /* Requested units */
+    char * units_str = argv[3];
+    Units units = units_str[0] == 'F' ? FAHRENHEIT : CELSIUS;
+
+
+    const char * csv_file_path = "data.csv";
+    if (argc > 4)
+    {
+        csv_file_path = argv[4];
+    }
+
+    int days_forward = 6; // default: week including requested data
+
     HashTable* cities = HashTable_Make(5);
 
-    const char * filePath = "data.csv";
-    FILE * f = fopen(filePath, "r");
+    FILE * f = fopen(csv_file_path, "r");
     if (f == NULL)
     {
-        fprintf(stderr, "Could not open file %s\n", filePath);
-        return;
+        fprintf(stderr, "Could not open file %s\n", csv_file_path);
+        return 0;
     }
 
     parse_csv_file(cities, f);
+    char * json = get_next_days_prevision(cities, city, date, units, days_forward);
 
-    Date date;
-    date.day = 24;
-    date.month = 9;
-    date.year = 2020;
-    char * json = get_next_days_prevision(cities, "Valencia", date, FAHRENHEIT, 10);
-    printf("%s\n",json);
+    printf("Peticion: %s, %d/%d/%d, %s", city,
+           date.day, date.month, date.year,
+           units == FAHRENHEIT? "Fahrenheit":"Celsius");
+
+    printf("\n\n=== Resultado === \n%s\n",json);
+
+    const char * json_out_path = "result.json";
+    const char * html_out_path = "index.html";
+    const char * html_template_path = "template.html";
+    FILE * fout = fopen("resultado.json", "w");
+    fprintf(fout, "%s", json);
+
+    printf("\n-->Generated %s", json_out_path);
+    printf("\n-->Generated %s\n", html_out_path);
+
+    generate_html(html_template_path, html_out_path, json);
 
     free(json);
+
     return 0;
 }

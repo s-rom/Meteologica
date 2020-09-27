@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html><head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="parse_data.js"></script>
+
+</head>
+<body>
+    <div class = "container-fluid" style="margin-right: 20px; margin-top: 20px; margin-left: 10px;">
+        
+    <div class="row">
+        <div class="col">
+            <h3>Petición: </h3>
+            <p id="petition">
+            </p>
+            <h3>Resultado JSON: </h3>
+            <p id="raw_json_data">
+              &JSON&
+            </p>
+        </div>
+        <div class="col">  
+          <h3 id="city_header">Ciudad</h3>
+          <table class="table" id="prevision_table">
+            <thead class="thead">
+              <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">Temperatura</th>
+                <th scope="col">Precipitación</th>
+                <th scope="col">Nubosidad</th>
+              </tr>
+            </thead>
+            <tbody id="prevision_table_body"></tbody>
+        </table>
+    </div>
+    </div>
+    </div>
+</body>
+</html>

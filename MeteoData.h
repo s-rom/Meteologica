@@ -16,12 +16,6 @@ struct Date
 };
 
 
-#define DATE_MSK  0x10
-#define MAXT_MSK  0x08
-#define MINT_MSK  0x04
-#define PREC_MSK  0x02
-#define CLOUD_MSK 0x01
-
 struct MeteoRecord
 {
     Date date;                  // Date
@@ -29,8 +23,8 @@ struct MeteoRecord
     float precipitation;        // mm
     int cloudiness;             // %
 
-    unsigned int valid = 0x00;  // Bitmap
 };
+
 
 struct MeteoData
 {

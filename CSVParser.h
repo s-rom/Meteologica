@@ -78,12 +78,10 @@ void parse_csv_file(HashTable* cities, FILE* f)
         }
 
         MeteoRecord record;
-        record.valid = 0x00;
         record.date = date;
 
         get_next_token(f, token, TK_SIZE, SEP);
         record.max_temp = parse_float(token);
-
 
         get_next_token(f, token, TK_SIZE, SEP);
         record.min_temp = parse_float(token);
