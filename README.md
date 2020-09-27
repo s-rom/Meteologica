@@ -15,7 +15,7 @@ La estructura consiste en una tabla de hashing (resolviendo las colisiones media
 Una consulta en la estructura consiste en acceder a la HashTable utilizando la ciudad (coste medio **O(1)**) y acceder al registro concreto por fecha (coste medio **O(log n)** dado que están ordenados y se puede utilizar búsqueda binária). En total, acceder a un registro de una ciudad para una fecha determinada tiene un coste de **O(log n)**.
 
 ### Optimización en memoria
-Se han tomado varias consideraciones respecto a la gestión de la memória y el principio de localidad.
+Se han tomado varias consideraciones respecto a la gestión de la memoria y el principio de localidad.
 
 * La tabla de hash realiza peticiones de memoria dinámica para sus nodos internos para mayor flexibilidad ya que una misma consulta se realiza solo sobre una ciudad.
 
@@ -45,8 +45,15 @@ Este realizará la búsqueda y generará dos archivos:
 ### Ejemplo: Madrid, dia 14 de Septiembre de 2020, Fahrenheit
 
 #### Ejecución 
+Para ejecutar el programa, el fichero "data.csv" debe estar en el mismo directorio que el ejecutable Meteologica.exe o bien indicar el 
+path como 4º argumento. 
+
+El fichero "template.html" debe encontrarse también en el mismo directorio.
 ![Ejecución](./images/execution.png)
+
 #### Web
+Para abrir la web estática generada por el programa, basta con abrir el fichero index.html con un navegador. Es necesario que 
+el fichero parse_data.js se encuentre en el mismo directorio que index.html
 ![Web](./images/web.png)
 
 
