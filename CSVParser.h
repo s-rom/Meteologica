@@ -44,7 +44,7 @@ int get_next_token(FILE * f, char * token, size_t token_size, char separator)
  * @param cities
  * @param f must be opened
  */
-void parse_csv_file(HashTable* cities, FILE* f)
+void parse_csv_file(struct HashTable* cities, FILE* f)
 {
     // Skip first
     fscanf(f, "%*[^\n\r][\n\r]");
@@ -59,7 +59,7 @@ void parse_csv_file(HashTable* cities, FILE* f)
     while(next_available)
     {
         // Read date
-        Date date;
+        struct Date date;
         get_next_token(f, token, TK_SIZE, SEP);
         parse_date(token, &date.day, &date.month, &date.year);
 
@@ -68,16 +68,16 @@ void parse_csv_file(HashTable* cities, FILE* f)
         char * trimmed_tk = trim_space(token);
 
         // Tries to get the node associated to that city
-        HashNode* city_node = HashTable_GetNode(cities, trimmed_tk);
+        struct HashNode* city_node = HashTable_GetNode(cities, trimmed_tk);
 
         // If not found, insert a new node with a new MeteoData for that city
         if (city_node == NULL)
         {
-            MeteoData* city_data = MeteoData_Make(30);
+            struct MeteoData* city_data = MeteoData_Make(30);
             city_node = HashTable_InsertNode(cities, trimmed_tk, city_data);
         }
 
-        MeteoRecord record;
+        struct MeteoRecord record;
         record.date = date;
 
         get_next_token(f, token, TK_SIZE, SEP);
@@ -92,7 +92,7 @@ void parse_csv_file(HashTable* cities, FILE* f)
         next_available = get_next_token(f, token, TK_SIZE, SEP);
         record.cloudiness = atoi(token);
 
-        MeteoData_InsertRecord((MeteoData*)city_node->data, record);
+        MeteoData_InsertRecord((struct MeteoData*)city_node->data, record);
 
         row++;
     }

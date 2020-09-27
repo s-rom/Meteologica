@@ -35,13 +35,13 @@ struct HashNode
 {
     char * key;
     void * data;
-    HashNode* next;
+    struct HashNode* next;
 };
 
 struct HashTable
 {
     int nodes_size;
-    HashNode ** nodes;
+    struct HashNode ** nodes;
 };
 
 /**
@@ -49,11 +49,11 @@ struct HashTable
  * @param size
  * @return pointer to the created HashTable
  */
-HashTable * HashTable_Make(int size)
+struct HashTable * HashTable_Make(int size)
 {
-    HashTable* table = (HashTable*) malloc(sizeof(HashTable));
+    struct HashTable* table = (struct HashTable*) malloc(sizeof(struct HashTable));
     table->nodes_size = size;
-    table->nodes = (HashNode**) malloc(sizeof(HashNode*) * size);
+    table->nodes = (struct HashNode**) malloc(sizeof(struct HashNode*) * size);
     for (int n = 0; n < size; n++)
         table->nodes[n] = NULL;
 
@@ -67,7 +67,7 @@ HashTable * HashTable_Make(int size)
  * @param node
  * @param free_data
  */
-void HashNode_Free(HashNode* node, int free_data)
+void HashNode_Free(struct HashNode* node, int free_data)
 {
     if (node == NULL) return;
 
@@ -87,11 +87,11 @@ void HashNode_Free(HashNode* node, int free_data)
  * @param table
  * @param free_data
  */
-void HashTable_Free(HashTable* table, int free_data)
+void HashTable_Free(struct HashTable* table, int free_data)
 {
     for (int n = 0; n < table->nodes_size; n++)
     {
-        HashNode* node = table->nodes[n];
+        struct HashNode* node = table->nodes[n];
         HashNode_Free(node, free_data);
     }
 
@@ -117,10 +117,10 @@ unsigned long hash(const char * str)
  * @return A pointer to the HashNode or NULL if a node with that
  * key was not found.
  */
-HashNode* HashTable_GetNode(HashTable * table, const char * key)
+struct HashNode* HashTable_GetNode(struct HashTable * table, const char * key)
 {
     int idx = hash(key) % table->nodes_size;
-    HashNode * iter = table->nodes[idx];
+    struct HashNode * iter = table->nodes[idx];
 
     while (iter != NULL)
     {
@@ -136,12 +136,12 @@ HashNode* HashTable_GetNode(HashTable * table, const char * key)
  * Prints the contents of a hashtable for debug purposes.
  * @param table
  */
-void HashTable_Print(HashTable* table)
+void HashTable_Print(struct HashTable* table)
 {
     for (int i = 0; i < table->nodes_size; i++)
     {
         printf("--- Index %d ---\n", i);
-        HashNode* iter = table->nodes[i];
+        struct HashNode* iter = table->nodes[i];
         if (iter == NULL)
         {
             printf(" <void> \n");
@@ -163,7 +163,7 @@ void HashTable_Print(HashTable* table)
  * @param data pointer to a valid memory address.
  * @return the newly created HashNode pointer or NULL if it failed.
  */
-HashNode* HashTable_InsertNode(HashTable* table, const char * key, void * data)
+struct HashNode* HashTable_InsertNode(struct HashTable* table, const char * key, void * data)
 {
 
     int idx = hash(key) % table->nodes_size;
@@ -175,7 +175,7 @@ HashNode* HashTable_InsertNode(HashTable* table, const char * key, void * data)
     }
 
     // Create new node
-    HashNode* new_node = (HashNode*) malloc(sizeof(HashNode));
+    struct HashNode* new_node = (struct HashNode*) malloc(sizeof(struct HashNode));
     new_node->data = data;
     new_node->key = (char *) malloc((strlen(key) + 1) * sizeof(char));
     strcpy(new_node->key, key);
@@ -187,7 +187,7 @@ HashNode* HashTable_InsertNode(HashTable* table, const char * key, void * data)
     }
     else
     {
-        HashNode * aux = table->nodes[idx];
+        struct HashNode * aux = table->nodes[idx];
         new_node->next = aux;
         table->nodes[idx] = new_node;
     }

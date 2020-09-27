@@ -18,9 +18,9 @@
  * @param date
  * @return index to the row
  */
-int retrieve_row_index_by_date(MeteoData* city, Date date)
+int retrieve_row_index_by_date(struct MeteoData* city, struct Date date)
 {
-    Date* mid_date;
+    struct Date* mid_date;
     int start = 0, end = city->next_idx - 1;
     int mid = (start + end) / 2;
 
@@ -56,9 +56,10 @@ int retrieve_row_index_by_date(MeteoData* city, Date date)
  * @param days_forward how many days it will look for
  * @return json buffer, must be freed by caller
  */
-char * get_next_days_prevision(HashTable* cities, const char * city, Date date, Units units, int days_forward)
+char * get_next_days_prevision(struct HashTable* cities, const char * city,
+                               struct  Date date, enum Units units, int days_forward)
 {
-    HashNode* node = HashTable_GetNode(cities, city);
+    struct HashNode* node = HashTable_GetNode(cities, city);
     if (node == NULL)
     {
         fprintf(stderr, "The city \"%s\" does not has any records\n", city);
@@ -66,7 +67,7 @@ char * get_next_days_prevision(HashTable* cities, const char * city, Date date, 
     }
 
 
-    MeteoData* data = (MeteoData*) node->data;
+    struct MeteoData* data = (struct MeteoData*) node->data;
     int idx = retrieve_row_index_by_date(data, date);
     if (idx == -1)
     {
@@ -82,7 +83,7 @@ char * get_next_days_prevision(HashTable* cities, const char * city, Date date, 
     const int MAX_ROWS = idx + days_forward;
     for (int i = idx; i <= MAX_ROWS && i < data->next_idx; i++)
     {
-        MeteoRecord* row = &data->records[i];
+        struct MeteoRecord* row = &data->records[i];
         JSON_AddRecord(json_buff, &BUFF_SIZE, row, units,
                        (i+1 <= MAX_ROWS && i+1 < data->next_idx));
     }
@@ -136,12 +137,12 @@ int main(int argc, char *argv[])
 
     /* Requested date */
     char * date_str = argv[2];
-    Date date;
+    struct Date date;
     parse_date(date_str, &date.day, &date.month, &date.year);
 
     /* Requested units */
     char * units_str = argv[3];
-    Units units = units_str[0] == 'F' ? FAHRENHEIT : CELSIUS;
+    enum Units units = (units_str[0] == 'F' ? FAHRENHEIT : CELSIUS);
 
 
     const char * csv_file_path = "data.csv";
@@ -152,7 +153,7 @@ int main(int argc, char *argv[])
 
     int days_forward = 6; // default: week including requested data
 
-    HashTable* cities = HashTable_Make(5);
+    struct HashTable* cities = HashTable_Make(5);
 
     FILE * f = fopen(csv_file_path, "r");
     if (f == NULL)

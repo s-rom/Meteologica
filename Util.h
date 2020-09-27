@@ -114,16 +114,6 @@ void parse_date(char * str, int* day, int* month, int* year)
     *day = atoi(tk);
 }
 
-/**
- * Celsius to Fahrenheit. Function version.
- * @param celsius value
- * @return fahrenheit value
- */
-float celsius_to_fahrenheit(float celsius)
-{
-    return celsius * (9.0f/5.0f) + 32;
-}
-
 
 /**
  * Celsius to Fahrenheit. Procedure version.
@@ -158,7 +148,7 @@ int compare_number(int a, int b)
  *         a < b: -1
  *         a = b: 0
  */
-int Date_Compare(Date* a, Date* b)
+int Date_Compare(struct Date* a, struct Date* b)
 {
     int year = compare_number(a->year, b->year);
     if (year != 0) return year;

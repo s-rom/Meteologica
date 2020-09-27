@@ -50,14 +50,14 @@ OBJECTS_DIR   = release
 
 ####### Files
 
-SOURCES       = ..\main.cpp 
+SOURCES       = ..\main.c 
 OBJECTS       = release/main.o
 
 DIST          =  CSVParser.h \
 		HashTable.h \
 		JSON.h \
 		MeteoData.h \
-		Util.h ..\main.cpp
+		Util.h ..\main.c
 QMAKE_TARGET  = Meteologica
 DESTDIR        = release\ #avoid trailing-slash linebreak
 TARGET         = Meteologica.exe
@@ -105,12 +105,12 @@ compiler_clean:
 
 ####### Compile
 
-release/main.o: ../main.cpp ../HashTable.h \
+release/main.o: ../main.c ../HashTable.h \
 		../MeteoData.h \
 		../Util.h \
 		../CSVParser.h \
 		../JSON.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\main.o ..\main.cpp
+	$(CC) -c $(CFLAGS) $(INCPATH) -o release\main.o ..\main.c
 
 ####### Install
 

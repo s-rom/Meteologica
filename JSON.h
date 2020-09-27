@@ -64,7 +64,7 @@ void JSON_Concat(char * buff, size_t* BUFF_SIZE, const char * src)
  * @param temp_units desired units for temperature limits
  * @param last_comma whether a comma should be appended or not
  */
-void JSON_AddRecord(char * buff, size_t* BUFF_SIZE, MeteoRecord* row, Units temp_units, int last_comma)
+void JSON_AddRecord(char * buff, size_t* BUFF_SIZE, struct MeteoRecord* row, enum Units temp_units, int last_comma)
 {
 
     const char * COMMA = ",";
@@ -96,7 +96,7 @@ void JSON_AddRecord(char * buff, size_t* BUFF_SIZE, MeteoRecord* row, Units temp
  * @param BUFF_SIZE current size of buff
  * @param city
  */
-void JSON_Start(char * buff, size_t* BUFF_SIZE, const char * city, Units units)
+void JSON_Start(char * buff, size_t* BUFF_SIZE, const char * city, enum Units units)
 {
     /*
      {

@@ -18,7 +18,7 @@ struct Date
 
 struct MeteoRecord
 {
-    Date date;                  // Date
+    struct Date date;           // Date
     float max_temp, min_temp;   // Celsius
     float precipitation;        // mm
     int cloudiness;             // %
@@ -28,9 +28,9 @@ struct MeteoRecord
 
 struct MeteoData
 {
-    MeteoRecord * records;      // Array of records
-    int next_idx = 0;           // Next index to push back
-    int rows = 0;               // Number of records available
+    struct MeteoRecord * records; // Array of records
+    int next_idx;                 // Next index to push back
+    int rows;                     // Number of records available
 };
 
 
@@ -39,10 +39,10 @@ struct MeteoData
  * @param initial_rows
  * @return the pointer to the created struct.
  */
-MeteoData * MeteoData_Make(int initial_rows)
+struct MeteoData * MeteoData_Make(int initial_rows)
 {
-    MeteoData* data = (MeteoData*) malloc(sizeof(MeteoData));
-    data->records = (MeteoRecord*) malloc(sizeof(MeteoRecord) * initial_rows);
+    struct MeteoData* data = (struct MeteoData*) malloc(sizeof(struct MeteoData));
+    data->records = (struct MeteoRecord*) malloc(sizeof(struct MeteoRecord) * initial_rows);
     data->rows = initial_rows;
     data->next_idx = 0;
     return data;
@@ -52,7 +52,7 @@ MeteoData * MeteoData_Make(int initial_rows)
  * Releases memory associated to a MeteoData pointer.
  * @param data
  */
-void MeteoData_Free(MeteoData * data)
+void MeteoData_Free(struct MeteoData * data)
 {
     free(data->records);
     free(data);
@@ -64,11 +64,11 @@ void MeteoData_Free(MeteoData * data)
  * @param extra_rows
  * @return pointer to the data parameter
  */
-MeteoData * MeteoData_AllocExtraRows(MeteoData * data, int extra_rows)
+struct MeteoData * MeteoData_AllocExtraRows(struct MeteoData * data, int extra_rows)
 {
     int rows = data->rows;
     data->rows = rows + extra_rows;
-    data->records = (MeteoRecord*) realloc(data->records, sizeof(MeteoRecord) * data->rows);
+    data->records = (struct MeteoRecord*) realloc(data->records, sizeof(struct MeteoRecord) * data->rows);
     return data;
 }
 
@@ -78,7 +78,7 @@ MeteoData * MeteoData_AllocExtraRows(MeteoData * data, int extra_rows)
  * @param data pointer to initialized MeteoData
  * @param record
  */
-void MeteoData_InsertRecord(MeteoData* data, MeteoRecord record)
+void MeteoData_InsertRecord(struct MeteoData* data, struct MeteoRecord record)
 {
     if (data->next_idx >= data->rows)
     {
